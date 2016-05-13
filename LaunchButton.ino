@@ -6,14 +6,14 @@
 #include "Adafruit_GFX.h"
 
 const int RedButton = 2;
-const int BlueButton = 5;
+const int GreenButton = 5;
 const int RED_LED = 3;
-const int BLUE_LED = 6;
+const int GREEN_LED = 6;
 
 const int Piezo = 4;
 
 int RedButtonState = 0;
-int BlueButtonState = 0;
+int GreenButtonState = 0;
 int Transmit = 1;
 
 int countDown = 5; // Determines how long countdown will be
@@ -28,9 +28,9 @@ Adafruit_7segment matrix = Adafruit_7segment();
 void setup() {
   Serial.begin(115200);
   pinMode(RED_LED, OUTPUT);
-  pinMode(BLUE_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
   pinMode(RedButton, INPUT);
-  pinMode(BlueButton, INPUT);
+  pinMode(GreenButton, INPUT);
   matrix.begin(0x70);
   
   radio.begin();
@@ -42,7 +42,7 @@ void setup() {
 
 void loop() {
   RedButtonState = digitalRead(RedButton);
-  BlueButtonState = digitalRead(BlueButton);
+  GreenButtonState = digitalRead(GreenButton);
   
   matrix.print(0000, DEC);
   matrix.writeDisplay();
@@ -51,13 +51,13 @@ void loop() {
     countdown(); 
   } 
 
-  if (BlueButtonState == HIGH){
+  if (GreenButtonState == HIGH){
     checkCommunication(); 
   } 
   
   else{
     digitalWrite(RED_LED, LOW);
-    digitalWrite(BLUE_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
   }
 }
 
@@ -86,12 +86,12 @@ void countdown(){
 void checkCommunication(){
     for (int i = countDown; i >= 1; i--)
   {
-    digitalWrite(BLUE_LED, HIGH);
+    digitalWrite(GREEN_LED, HIGH);
     tone(Piezo, sound);
     matrix.print(i, DEC);
     matrix.writeDisplay();
     delay(countDelay);
-    digitalWrite(BLUE_LED, LOW);
+    digitalWrite(GREEN_LED, LOW);
     noTone(Piezo);
     delay(countDelay);
   }
