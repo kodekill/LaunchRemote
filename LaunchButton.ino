@@ -1,25 +1,24 @@
-/*
-Connect CLK to the I2C clock - on Arduino UNO thats Analog #5, on the Leonardo it's Digital #3, on the Mega it's digital #21
-Connect DAT to the I2C data - on Arduino UNO thats Analog #4, on the Leonardo it's Digital #2, on the Mega it's digital #20
-Connect GND to common ground
-Connect VCC+ to power - 5V is best but 3V also seems to work for 3V microcontrollers.
-https://learn.adafruit.com/adafruit-led-backpack/0-dot-56-seven-segment-backpack
-*/
-
-
-#include <Wire.h> // Enable this line if using Arduino Uno, Mega, etc.
+//Have the go go power rangers sound effect play, when the device is turned on. 
+#include <Wire.h>
 #include <SPI.h>
 #include "RF24.h"
 #include "Adafruit_LEDBackpack.h"
 #include "Adafruit_GFX.h"
 
-const int Button = 2;
-const int LED =  3;
+const int RedButton = 2;
+const int BlueButton = 5;
+const int RED_LED = 3;
+const int BLUE_LED = 6;
+
 const int Piezo = 4;
-int buttonState = 0;
+
+int RedButtonState = 0;
+int BlueButtonState = 0;
 int Transmit = 1;
+
+int countDown = 5; // Determines how long countdown will be
 int sound = 400; //Pitch for the piezo
-int count = 500; //Time for the countdown
+int countDelay = 500; //Time for the countdown
 
 bool radioNumber = 0;
 RF24 radio(9,10);
@@ -28,9 +27,11 @@ Adafruit_7segment matrix = Adafruit_7segment();
 
 void setup() {
   Serial.begin(115200);
-  pinMode(LED, OUTPUT);
-  pinMode(Button, INPUT);
-  matrix.begin(0x70); // // // // // // // // May need to check my I2C serial address. 
+  pinMode(RED_LED, OUTPUT);
+  pinMode(BLUE_LED, OUTPUT);
+  pinMode(RedButton, INPUT);
+  pinMode(BlueButton, INPUT);
+  matrix.begin(0x70);
   
   radio.begin();
   radio.setChannel(108);
@@ -40,30 +41,66 @@ void setup() {
 }
 
 void loop() {
-  buttonState = digitalRead(Button);
+  RedButtonState = digitalRead(RedButton);
+  BlueButtonState = digitalRead(BlueButton);
   
-  if (buttonState == HIGH){
+  matrix.print(0000, DEC);
+  matrix.writeDisplay();
+  
+  if (RedButtonState == HIGH){
     countdown(); 
+  } 
+
+  if (BlueButtonState == HIGH){
+    checkCommunication(); 
   } 
   
   else{
-    digitalWrite(LED, LOW);
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(BLUE_LED, LOW);
   }
 }
 
 void countdown(){
-  for (int i = 10; i >= 1; i--)
+  for (int i = countDown; i >= 1; i--)
   {
-    digitalWrite(LED, HIGH);
+    digitalWrite(RED_LED, HIGH);
     tone(Piezo, sound);
     matrix.print(i, DEC);
     matrix.writeDisplay();
-    delay(count);
-    digitalWrite(LED, LOW);
+    delay(countDelay);
+    digitalWrite(RED_LED, LOW);
     noTone(Piezo);
-    delay(count);
+    delay(countDelay);
   }
+  
+  matrix.print(0, DEC);
+  matrix.writeDisplay();
+  
   radio.write(&Transmit, sizeof(Transmit));
+  delay(500);
+}
+
+
+//Change this after I test button/LED
+void checkCommunication(){
+    for (int i = countDown; i >= 1; i--)
+  {
+    digitalWrite(BLUE_LED, HIGH);
+    tone(Piezo, sound);
+    matrix.print(i, DEC);
+    matrix.writeDisplay();
+    delay(countDelay);
+    digitalWrite(BLUE_LED, LOW);
+    noTone(Piezo);
+    delay(countDelay);
+  }
+  
+  matrix.print(0, DEC);
+  matrix.writeDisplay();
+  
+  radio.write(&Transmit, sizeof(Transmit));
+  delay(500);
 }
 
 
