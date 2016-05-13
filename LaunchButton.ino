@@ -2,14 +2,17 @@
 #include <Wire.h>
 #include <SPI.h>
 #include "RF24.h"
+#include <Adafruit_NeoPixel.h>
 #include "Adafruit_LEDBackpack.h"
 #include "Adafruit_GFX.h"
+#define PIN 9
+Adafruit_NeoPixel pixel = Adafruit_NeoPixel(1, PIN, NEO_GRB + NEO_KHZ800);
 
 const int RedButton = 2;
 const int GreenButton = 5;
 const int RED_LED = 3;
 const int GREEN_LED = 6;
-
+const int NeoPixel = 9;
 const int Piezo = 4;
 
 int RedButtonState = 0;
@@ -26,11 +29,13 @@ byte addresses[][6] = {"1Node","2Node"};
 Adafruit_7segment matrix = Adafruit_7segment();
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   pinMode(RED_LED, OUTPUT);
   pinMode(GREEN_LED, OUTPUT);
   pinMode(RedButton, INPUT);
   pinMode(GreenButton, INPUT);
+  pixel.begin();
+  pixel.show(); // Initialize all pixels to 'off'
   matrix.begin(0x70);
   
   radio.begin();
@@ -68,9 +73,14 @@ void countdown(){
     tone(Piezo, sound);
     matrix.print(i, DEC);
     matrix.writeDisplay();
+    pixel.setPixelColor(0, pixel.Color(0,25,0)); // Moderately bright green color.
+    pixel.show();
     delay(countDelay);
+    
     digitalWrite(RED_LED, LOW);
     noTone(Piezo);
+    pixel.setPixelColor(0, pixel.Color(0,0,0)); // Moderately bright green color.
+    pixel.show();
     delay(countDelay);
   }
   
