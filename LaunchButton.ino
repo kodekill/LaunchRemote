@@ -19,6 +19,7 @@ const int Piezo = 4;
 int RedButtonState = 0;
 int GreenButtonState = 0;
 int Transmit = 1;
+int Transmit2 = 2;
 
 int countDown = 5; // Determines how long countdown will be
 int sound = 400; //Pitch for the piezo
@@ -59,6 +60,7 @@ void loop() {
   YellowPixel();
   RedButtonState = digitalRead(RedButton);
   GreenButtonState = digitalRead(GreenButton);
+  digitalWrite(GREEN_LED, HIGH);
 
   matrix.print(0000, DEC);
   matrix.writeDisplay();
@@ -101,21 +103,13 @@ void countdown(){
 
 //Change this after I test button/LED
 void checkCommunication(){
-    for (int i = countDown; i >= 1; i--)
-  {
-    digitalWrite(GREEN_LED, HIGH);
-    tone(Piezo, sound);
-    matrix.print(i, DEC);
-    matrix.writeDisplay();
-    delay(countDelay);
-    noTone(Piezo);
-    delay(countDelay);
-  }
-
-  matrix.print(0, DEC);
-  matrix.writeDisplay();
-
-  radio.write(&Transmit, sizeof(Transmit));
+  digitalWrite(GREEN_LED, LOW);
+  delay(250);
+  digitalWrite(GREEN_LED, HIGH);
+    radio.write(&Transmit2, sizeof(Transmit2));
+  digitalWrite(GREEN_LED, LOW);
+  delay(250);
+  digitalWrite(GREEN_LED, HIGH);
   delay(500);
 }
 
