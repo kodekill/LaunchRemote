@@ -22,7 +22,7 @@ int Transmit = 1;
 int Transmit2 = 2;
 
 int countDown = 5; // Determines how long countdown will be
-int sound = 400; //Pitch for the piezo
+int sound = 450; //Pitch for the piezo
 int countDelay = 500; //Time for the countdown
 
 bool radioNumber = 0;
@@ -57,12 +57,12 @@ void setup() {
 }
 
 void loop() {
-  YellowPixel();
+  GreenPixel();
   RedButtonState = digitalRead(RedButton);
   GreenButtonState = digitalRead(GreenButton);
   digitalWrite(GREEN_LED, HIGH);
 
-  matrix.print(0000, DEC);
+  matrix.print(0, DEC);
   matrix.writeDisplay();
 
   if (RedButtonState == HIGH){
@@ -73,10 +73,6 @@ void loop() {
     checkCommunication();
   }
 
-  else{
-    digitalWrite(RED_LED, LOW);
-    digitalWrite(GREEN_LED, LOW);
-  }
 }
 
 void countdown(){
@@ -104,13 +100,19 @@ void countdown(){
 //Change this after I test button/LED
 void checkCommunication(){
   digitalWrite(GREEN_LED, LOW);
-  delay(250);
+  BluePixel();
+  delay(150);
+  OffPixel();
+  delay(200);
+  
   digitalWrite(GREEN_LED, HIGH);
     radio.write(&Transmit2, sizeof(Transmit2));
+  BluePixel();
+  delay(150);
+  OffPixel();
+  delay(200);
+   
   digitalWrite(GREEN_LED, LOW);
-  delay(250);
-  digitalWrite(GREEN_LED, HIGH);
-  delay(500);
 }
 
 void PowerRangers(){
@@ -138,6 +140,11 @@ void BluePixel(){
 
 void YellowPixel(){
   pixel.setPixelColor(0, pixel.Color(25,20,0));
+  pixel.show();
+}
+
+void GreenPixel(){
+  pixel.setPixelColor(0, pixel.Color(0,25,0));
   pixel.show();
 }
 
