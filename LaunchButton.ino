@@ -72,7 +72,9 @@ void loop() {
   if (GreenButtonState == HIGH){
     checkCommunication();
   }
-
+  else {
+    digitalWrite(RED_LED, LOW);
+  }
 }
 
 void countdown(){
@@ -87,31 +89,30 @@ void countdown(){
     noTone(Piezo);
     OffPixel();
     delay(countDelay);
+
+    if ( i == 3){
+      radio.write(&Transmit, sizeof(Transmit));
+    }
   }
 
   matrix.print(0, DEC);
   matrix.writeDisplay();
-
-  radio.write(&Transmit, sizeof(Transmit));
-  delay(500);
 }
 
 
 //Change this after I test button/LED
 void checkCommunication(){
+  delay(400);
   digitalWrite(GREEN_LED, LOW);
+  radio.write(&Transmit2, sizeof(Transmit2));
   BluePixel();
   delay(150);
   OffPixel();
   delay(200);
-  
-  digitalWrite(GREEN_LED, HIGH);
-    radio.write(&Transmit2, sizeof(Transmit2));
   BluePixel();
   delay(150);
   OffPixel();
   delay(200);
-   
   digitalWrite(GREEN_LED, LOW);
 }
 
