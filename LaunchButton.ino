@@ -1,4 +1,3 @@
-//Have the go go power rangers sound effect play, when the device is turned on. 
 #include <Wire.h>
 #include <SPI.h>
 #include "RF24.h"
@@ -7,36 +6,30 @@
 #include "Adafruit_GFX.h"
 #include "pitches.h"
 #define PIN 9
-Adafruit_NeoPixel pixel = Adafruit_NeoPixel(1, PIN, NEO_GRB + NEO_KHZ800);
-
-const int RedButton = 2;
-const int GreenButton = 5;
-const int RED_LED = 3;
-const int GREEN_LED = 6;
-const int NeoPixel = 9;
-const int Piezo = 4;
+#define RedButton 2
+#define RED_LED 3
+#define Piezo 4
+#define GreenButton 5
+#define GREEN_LED 6
 
 int RedButtonState = 0;
 int GreenButtonState = 0;
 int Transmit = 1;
 int Transmit2 = 2;
-
-int countDown = 5; // Determines how long countdown will be
+int countDown = 10; // Determines how long countdown will be
 int sound = 450; //Pitch for the piezo
 int countDelay = 500; //Time for the countdown
-
 bool radioNumber = 0;
-RF24 radio(9,10);
 byte addresses[][6] = {"1Node","2Node"};
+RF24 radio(9,10);
 Adafruit_7segment matrix = Adafruit_7segment();
+Adafruit_NeoPixel pixel = Adafruit_NeoPixel(1, PIN, NEO_GRB + NEO_KHZ800);
 
 int melody[] = {
-  NOTE_E7, 0, NOTE_E7, NOTE_D7, NOTE_E7, NOTE_G7,0, NOTE_E7,
-};
+  NOTE_E7, 0, NOTE_E7, NOTE_D7, NOTE_E7, NOTE_G7,0, NOTE_E7,};
 
 int noteDurations[] = {
-  8, 8, 4, 8, 4, 4, 16, 4
-};
+  8, 8, 4, 8, 4, 4, 16, 4};
 
 void setup() {
   Serial.begin(9600);
@@ -90,7 +83,7 @@ void countdown(){
     OffPixel();
     delay(countDelay);
 
-    if ( i == 3){
+    if ( i == 10){
       radio.write(&Transmit, sizeof(Transmit));
     }
   }
